@@ -5,10 +5,12 @@ import pandas as pd
 st.set_page_config(page_title="Nuestra Agenda", page_icon="☁️")
 st.title("☁️ Espacio Compartido")
 
-# conexión con Google Sheets
+# conexión
 conn = st.connection("gsheets", type=GSheetsConnection)
 
-WORKSHEET = "Hoja1"   # nombre real de la hoja en Google Sheets
+# nombre de la hoja de Google Sheets
+WORKSHEET = "Hoja1"
+
 
 def cargar_datos():
     try:
@@ -23,7 +25,7 @@ def cargar_datos():
 tab1, tab2 = st.tabs(["📅 Agenda", "📝 Blog"])
 
 
-# ---------- AGENDA ----------
+# -------- AGENDA --------
 with tab1:
     st.subheader("Nuevo Evento")
 
@@ -52,7 +54,7 @@ with tab1:
         st.rerun()
 
 
-# ---------- BLOG ----------
+# -------- BLOG / NOTAS --------
 with tab2:
     st.subheader("Notas")
 
