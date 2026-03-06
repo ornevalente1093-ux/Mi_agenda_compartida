@@ -5,19 +5,25 @@ import pandas as pd
 st.set_page_config(page_title="Nuestra Agenda", page_icon="☁️")
 st.title("☁️ Espacio Compartido")
 
+# conexión con Google Sheets
 conn = st.connection("gsheets", type=GSheetsConnection)
 
-# nombre de la hoja dentro del Google Sheet
-WORKSHEET = "Agenda"
+WORKSHEET = "Hoja1"   # nombre real de la hoja en Google Sheets
+
+def cargar_datos():
+    try:
+        data = conn.read(worksheet=WORKSHEET)
+        if data is None or data.empty:
+            data = pd.DataFrame(columns=["Título","Fecha","Hora","Descripción","Nota"])
+        return data
+    except:
+        return pd.DataFrame(columns=["Título","Fecha","Hora","Descripción","Nota"])
+
 
 tab1, tab2 = st.tabs(["📅 Agenda", "📝 Blog"])
 
-def cargar_datos():
-    data = conn.read(worksheet=WORKSHEET)
-    if data is None or data.empty:
-        data = pd.DataFrame(columns=["Título","Fecha","Hora","Descripción","Nota"])
-    return data
 
+# ---------- AGENDA ----------
 with tab1:
     st.subheader("Nuevo Evento")
 
@@ -41,9 +47,12 @@ with tab1:
         updated_df = pd.concat([existing_data, df_nuevo], ignore_index=True)
 
         conn.update(worksheet=WORKSHEET, data=updated_df)
-        st.success("¡Evento guardado!")
-        st.cache_data.clear()
 
+        st.success("Evento guardado ✔")
+        st.rerun()
+
+
+# ---------- BLOG ----------
 with tab2:
     st.subheader("Notas")
 
@@ -62,14 +71,13 @@ with tab2:
         updated_df = pd.concat([existing_data, df_nota], ignore_index=True)
 
         conn.update(worksheet=WORKSHEET, data=updated_df)
-        st.success("Nota guardada")
-        st.cache_data.clear()
+
+        st.success("Nota guardada ✔")
+        st.rerun()
+
 
 st.divider()
-st.subheader("Próximos Eventos y Notas")
+st.subheader("Eventos y Notas")
 
-try:
-    data = cargar_datos()
-    st.dataframe(data)
-except:
-    st.info("Todavía no hay datos.")
+data = cargar_datos()
+st.dataframe(data)
